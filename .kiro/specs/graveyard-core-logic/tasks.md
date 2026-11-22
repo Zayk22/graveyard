@@ -6,7 +6,7 @@ Implement two pure TypeScript modules — `alertParser` and `hauntingDetector` �
 
 ## Tasks
 
-- [ ] 1. Create shared type definitions
+- [x] 1. Create shared type definitions
   - Create `src/lib/types.ts` with all exported types: `Interval`, `HauntingStatus`, `AmountResult`, `DebitRecord`, `UnparseableMessage`, `Haunting`, `ParseResult`
   - Use TypeScript strict mode; every field typed exactly as specified in the design
   - Create `vitest.config.ts` at the workspace root if it does not already exist, configured for TypeScript with no path aliases — all imports inside `src/lib/` use relative paths (e.g. `./types`, `./dedupe`, `../lib/alertParser`) and never the `@/` alias
