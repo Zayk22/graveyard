@@ -6,6 +6,43 @@
         "executionId": "da64eb3c-1feb-4f8d-ba29-f3553109f2ef",
         "chatSessionId": "sess_e3396af1-bef6-431f-835f-16cb6df54659",
         "timestamp": 1795381922875
+      },
+      {
+        "executionId": "cbc89fa8-2ba2-4947-9502-8a51941c4c97",
+        "chatSessionId": "sess_2a62b17a-4035-4a8a-a836-8a2b229148a7",
+        "timestamp": 1795383418642
+      },
+      {
+        "executionId": "ded8fd38-4669-4d6c-98d4-67eea9cb9acd",
+        "chatSessionId": "sess_0ce0ac0f-e88a-41a5-87f3-435595724fb0",
+        "timestamp": 1795383653847
+      },
+      {
+        "executionId": "ded8fd38-4669-4d6c-98d4-67eea9cb9acd",
+        "chatSessionId": "sess_0ce0ac0f-e88a-41a5-87f3-435595724fb0",
+        "timestamp": 1795383657755
+      }
+    ],
+    "7.8 Create shared deduplication helper in `src/lib/dedupe.ts`": [
+      {
+        "executionId": "774ddb41-404e-4341-a19a-c3c3015a7097",
+        "chatSessionId": "sess_da67756e-58de-472b-9cd5-84be8d03eaf3",
+        "timestamp": 1795383713247
+      },
+      {
+        "executionId": "774ddb41-404e-4341-a19a-c3c3015a7097",
+        "chatSessionId": "sess_da67756e-58de-472b-9cd5-84be8d03eaf3",
+        "timestamp": 1795383906020
+      },
+      {
+        "executionId": "e2c0a4d9-2d79-4fc5-89fd-bc4d95592ef8",
+        "chatSessionId": "sess_2a62b17a-4035-4a8a-a836-8a2b229148a7",
+        "timestamp": 1795383927374
+      },
+      {
+        "executionId": "e2c0a4d9-2d79-4fc5-89fd-bc4d95592ef8",
+        "chatSessionId": "sess_2a62b17a-4035-4a8a-a836-8a2b229148a7",
+        "timestamp": 1795383959547
       }
     ]
   }

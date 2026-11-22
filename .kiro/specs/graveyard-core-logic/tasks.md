@@ -130,7 +130,7 @@ Implement two pure TypeScript modules â€” `alertParser` and `hauntingDetector` â
   - [ ] 7.7 Implement `stableId(normalisedMerchant: string, interval: Interval): string` in `src/lib/hauntingDetector.ts`
     - Return `${normalisedMerchant}-${interval}` with spaces replaced by hyphens
     - _Requirements: 3.14_
-  - [ ] 7.8 Create shared deduplication helper in `src/lib/dedupe.ts`
+  - [x] 7.8 Create shared deduplication helper in `src/lib/dedupe.ts`
     - Implement `deduplicateRecords(records: DebitRecord[]): DebitRecord[]` in `src/lib/dedupe.ts`
     - Removes records sharing the same `(normalisedMerchant, date, amount)` triple
     - Export it from `dedupe.ts`; import it in both `alertParser.ts` (replacing task 3.6's local implementation) and `hauntingDetector.ts` (replacing the duplicate in task 7.8)
