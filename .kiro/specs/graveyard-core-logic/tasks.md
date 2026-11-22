@@ -12,12 +12,12 @@ Implement two pure TypeScript modules — `alertParser` and `hauntingDetector` �
   - Create `vitest.config.ts` at the workspace root if it does not already exist, configured for TypeScript with no path aliases — all imports inside `src/lib/` use relative paths (e.g. `./types`, `./dedupe`, `../lib/alertParser`) and never the `@/` alias
   - _Requirements: 1.1–1.16, 2.1–2.6, 3.1–3.17, 4.1–4.2_
 
-- [ ] 2. Implement `formatNaira`
-  - [ ] 2.1 Implement `formatNaira(kobo: number): string` in `src/lib/formatNaira.ts`
+- [x] 2. Implement `formatNaira`
+ - [x] 2.1 Implement `formatNaira(kobo: number): string` in `src/lib/formatNaira.ts`
     - Accept integer kobo, return `"NGN X,XXX.XX"` with comma separators and exactly two decimal places
     - Handle zero: return `"NGN 0.00"`
     - _Requirements: 2.5, 2.6_
-  - [ ] 2.2 Write unit tests for `formatNaira` in `src/lib/formatNaira.test.ts`
+ - [x] 2.2 Write unit tests for `formatNaira` in `src/lib/formatNaira.test.ts`
     - Zero kobo → `"NGN 0.00"`
     - 150000 → `"NGN 1,500.00"`
     - 123456 → `"NGN 1,234.56"`

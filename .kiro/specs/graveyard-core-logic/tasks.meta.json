@@ -44,6 +44,13 @@
         "chatSessionId": "sess_2a62b17a-4035-4a8a-a836-8a2b229148a7",
         "timestamp": 1795383959547
       }
+    ],
+    "2. Implement `formatNaira`": [
+      {
+        "executionId": "c9511d32-a7c6-4a14-9acf-2ca13a6b94fc",
+        "chatSessionId": "sess_c4d9e6d1-5b0f-4392-b068-a60e3c7ab0d6",
+        "timestamp": 1795384375285
+      }
     ]
   }
 }
