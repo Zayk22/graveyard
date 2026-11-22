@@ -24,32 +24,32 @@ Implement two pure TypeScript modules — `alertParser` and `hauntingDetector` �
     - Large value with multiple comma groups
     - _Requirements: 2.5, 2.6_
 
-- [ ] 3. Implement Alert Parser helpers
-  - [ ] 3.1 Implement `parseNgnAmount(text: string): AmountResult` in `src/lib/alertParser.ts`
+- [x] 3. Implement Alert Parser helpers
+  - [x] 3.1 Implement `parseNgnAmount(text: string): AmountResult` in `src/lib/alertParser.ts`
     - Strip `NGN`, `₦`, and all commas; detect non-NGN currency and return `{ ok: false, reason: "unsupported currency" }`
     - Validate naira string against `/^\d+$/` and kobo string (if present) against `/^\d{1,2}$/`; return `{ ok: false, reason: "invalid amount" }` on failure
     - Compute kobo with integer arithmetic only: `parseInt(nairaStr) * 100 + parseInt(koboStr.padEnd(2,"0").slice(0,2))`
     - Return `{ ok: false, reason: "invalid amount" }` if result exceeds `Number.MAX_SAFE_INTEGER`
     - _Requirements: 2.1–2.4_
-  - [ ] 3.2 Implement `normaliseMerchant(raw: string): string` in `src/lib/alertParser.ts`
+- [x] 3.2 Implement `normaliseMerchant(raw: string): string` in `src/lib/alertParser.ts`
     - Lowercase; remove all-digit tokens; remove ref-style tokens (letters immediately followed by digits); strip punctuation; collapse whitespace; trim
     - Return empty string when nothing remains (caller adds to unparseable with reason `"missing merchant"`)
     - _Requirements: 1.9_
-  - [ ] 3.3 Implement `deriveDisplayName(raw: string): string` in `src/lib/alertParser.ts`
+ - [x] 3.3 Implement `deriveDisplayName(raw: string): string` in `src/lib/alertParser.ts`
     - Remove all-digit tokens and ref-style tokens; trim; truncate to 60 characters
     - _Requirements: 1.9, 1.10_
-  - [ ] 3.4 Implement `parseAlertDate(text: string, refDate: string): string | "invalid" | "missing"` in `src/lib/alertParser.ts`
+ - [x] 3.4 Implement `parseAlertDate(text: string, refDate: string): string | "invalid" | "missing"` in `src/lib/alertParser.ts`
     - Parse `DD/MM/YYYY`, `DD-Mon-YYYY`, `YYYY-MM-DD`, and `DD/MM` formats
     - For `DD/MM`, resolve year using `refDate`; if that places the date in the future, use previous year
     - Return `"invalid"` for impossible dates (month 13, Feb 30, etc.); return `"missing"` when no date field found
     - Return ISO-8601 `YYYY-MM-DD` string on success
     - _Requirements: 1.5, 1.6, 1.7, 1.8_
-  - [ ] 3.5 Implement `splitMessages(raw: string): string[]` in `src/lib/alertParser.ts`
+- [x] 3.5 Implement `splitMessages(raw: string): string[]` in `src/lib/alertParser.ts`
     - Split on blank lines (zero non-whitespace characters) or alert-header patterns (`"Debit Alert"`, `"Account Debit"`, `"Transaction Alert"`)
     - Treat any line containing `"debited"` followed by an NGN/₦ amount as a self-contained Format B message boundary
     - Trim each segment; track 1-based line offset per segment
     - _Requirements: 1.1_
-  - [ ] 3.6 Wire `alertParser.ts` to use the shared deduplication helper
+- [x] 3.6 Wire `alertParser.ts` to use the shared deduplication helper
     - `deduplicateRecords` will be in `src/lib/dedupe.ts` (see task 7.8); in this task, wire `alertParser.ts` to import and use it via `import { deduplicateRecords } from './dedupe'`
     - _Requirements: 1.15_
 
