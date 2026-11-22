@@ -63,6 +63,18 @@
         "chatSessionId": "sess_157ee160-69b8-4ba5-ad3b-da95135556a9",
         "timestamp": 1795386225824
       }
+    ],
+    "5.1 Write unit tests for Alert Parser helpers in `src/lib/alertParser.test.ts`": [
+      {
+        "executionId": "c7948b4e-9947-4117-98c1-036ea3b2251f",
+        "chatSessionId": "sess_3f0172f4-d0d3-4897-97a8-0010e0032578",
+        "timestamp": 1795386703985
+      },
+      {
+        "executionId": "c7948b4e-9947-4117-98c1-036ea3b2251f",
+        "chatSessionId": "sess_3f0172f4-d0d3-4897-97a8-0010e0032578",
+        "timestamp": 1795386913777
+      }
     ]
   }
 }

@@ -74,7 +74,7 @@ Implement two pure TypeScript modules — `alertParser` and `hauntingDetector` �
     - _Requirements: 1.1–1.16_
 
 - [ ] 5. Write unit tests for the Alert Parser
-  - [ ] 5.1 Write unit tests for Alert Parser helpers in `src/lib/alertParser.test.ts`
+  - [x] 5.1 Write unit tests for Alert Parser helpers in `src/lib/alertParser.test.ts`
     - `parseNgnAmount`: NGN with/without kobo, commas, non-NGN currency, invalid amount
     - `normaliseMerchant`: digit removal, ref-style token removal, punctuation stripping, empty result
     - `deriveDisplayName`: 6+ digit run removed, truncated at 60 chars

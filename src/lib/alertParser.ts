@@ -9,6 +9,7 @@ const NON_NGN_PATTERN = /USD|GBP|EUR|CAD|AUD|JPY|CHF|CNY|INR|\$|€|£|¥/i;
 /**
  * Parses a currency string to an integer kobo value.
  * Never uses floating-point arithmetic for the monetary computation.
+ * Exported for unit testing.
  */
 export function parseNgnAmount(text: string): AmountResult {
   // Check for non-NGN currency before stripping symbols
