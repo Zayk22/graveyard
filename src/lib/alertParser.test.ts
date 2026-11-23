@@ -478,3 +478,184 @@ describe("deduplicateRecords", () => {
     expect(result).toHaveLength(1);
   });
 });
+
+// ─── parseAlerts ─────────────────────────────────────────────────────────────
+
+import { parseAlerts } from "./alertParser";
+
+describe("parseAlerts", () => {
+  const REF = "2024-03-15";
+
+  // 1. Single well-formed Format A alert → one DebitRecord
+  it("parses a single Format A alert into one DebitRecord", () => {
+    const raw = [
+      "Debit Alert",
+      "Amt: NGN 4,500.00",
+      "Desc: ZapTunes Monthly",
+      "Date: 15/03/2024",
+      "Acct: ****1234",
+      "Bal: NGN 55,000.00",
+    ].join("\n");
+
+    const result = parseAlerts(raw, REF);
+    expect(result.records).toHaveLength(1);
+    expect(result.unparseable).toHaveLength(0);
+    expect(result.records[0].amount).toBe(450000);
+    expect(result.records[0].date).toBe("2024-03-15");
+    expect(result.records[0].normalisedMerchant).toBe("zaptunes monthly");
+  });
+
+  // 2. Single well-formed Format B alert → one DebitRecord
+  it("parses a single Format B alert into one DebitRecord", () => {
+    const raw =
+      "Your account was debited NGN 1,200.00 for NeonBites Delivery on 07/04/2024. Ref: TRF-00042.";
+
+    const result = parseAlerts(raw, REF);
+    expect(result.records).toHaveLength(1);
+    expect(result.unparseable).toHaveLength(0);
+    expect(result.records[0].amount).toBe(120000);
+    expect(result.records[0].date).toBe("2024-04-07");
+    expect(result.records[0].normalisedMerchant).toBe("neonbites delivery");
+  });
+
+  // 3. Single well-formed Format C alert → one DebitRecord
+  it("parses a single Format C alert into one DebitRecord", () => {
+    const raw = [
+      "Transaction Alert - Account Debit",
+      "Amount: ₦750.00",
+      "Description: GhostRide Ltd REF20240315",
+      "Value Date: 15-Mar-2024",
+    ].join("\n");
+
+    const result = parseAlerts(raw, REF);
+    expect(result.records).toHaveLength(1);
+    expect(result.unparseable).toHaveLength(0);
+    expect(result.records[0].amount).toBe(75000);
+    expect(result.records[0].date).toBe("2024-03-15");
+    expect(result.records[0].normalisedMerchant).toBe("ghostride ltd");
+  });
+
+  // 4. Multiple alerts separated by blank lines → correct count
+  it("parses 3 Format A alerts separated by blank lines into 3 DebitRecords", () => {
+    const makeFormatA = (amt: string, merchant: string, date: string) =>
+      ["Debit Alert", `Amt: NGN ${amt}`, `Desc: ${merchant}`, `Date: ${date}`].join("\n");
+
+    const raw = [
+      makeFormatA("1,000.00", "ZapTunes", "01/03/2024"),
+      "",
+      makeFormatA("2,000.00", "NeonBites Delivery", "02/03/2024"),
+      "",
+      makeFormatA("500.00", "GhostRide Ltd", "03/03/2024"),
+    ].join("\n");
+
+    const result = parseAlerts(raw, REF);
+    expect(result.records).toHaveLength(3);
+    expect(result.unparseable).toHaveLength(0);
+  });
+
+  // 5. Non-NGN currency → one UnparseableMessage with reason "unsupported currency"
+  it("produces an unparseable entry for a non-NGN currency", () => {
+    const raw = [
+      "Debit Alert",
+      "Amt: USD 100.00",
+      "Desc: ZapTunes",
+      "Date: 15/03/2024",
+    ].join("\n");
+
+    const result = parseAlerts(raw, REF);
+    expect(result.records).toHaveLength(0);
+    expect(result.unparseable).toHaveLength(1);
+    expect(result.unparseable[0].reason).toBe("unsupported currency");
+  });
+
+  // 6. Credit alert → excluded from both arrays
+  it("silently excludes credit alerts from both arrays", () => {
+    const raw = [
+      "Credit Alert",
+      "Amt: NGN 5,000.00",
+      "Desc: FableBank Salary",
+      "Date: 15/03/2024",
+    ].join("\n");
+
+    const result = parseAlerts(raw, REF);
+    expect(result.records).toHaveLength(0);
+    expect(result.unparseable).toHaveLength(0);
+  });
+
+  // 7. Ambiguous alert → UnparseableMessage with reason "ambiguous alert type"
+  it("marks an alert containing both debit and credit phrases as ambiguous", () => {
+    const raw =
+      "Your account was debited NGN 500.00 and also credited NGN 500.00 for ZapTunes on 15/03/2024.";
+
+    const result = parseAlerts(raw, REF);
+    expect(result.records).toHaveLength(0);
+    expect(result.unparseable).toHaveLength(1);
+    expect(result.unparseable[0].reason).toBe("ambiguous alert type");
+  });
+
+  // 8. Empty input → empty arrays
+  it("returns empty arrays for empty input", () => {
+    const result = parseAlerts("", REF);
+    expect(result.records).toHaveLength(0);
+    expect(result.unparseable).toHaveLength(0);
+  });
+
+  // 9. Whitespace-only input → empty arrays
+  it("returns empty arrays for whitespace-only input", () => {
+    const result = parseAlerts("   \n\n  \n", REF);
+    expect(result.records).toHaveLength(0);
+    expect(result.unparseable).toHaveLength(0);
+  });
+
+  // 10. Duplicate records → deduplicated to one
+  it("deduplicates identical alerts pasted twice", () => {
+    const alert = [
+      "Debit Alert",
+      "Amt: NGN 1,500.00",
+      "Desc: ZapTunes Monthly",
+      "Date: 15/03/2024",
+    ].join("\n");
+    const raw = `${alert}\n\n${alert}`;
+
+    const result = parseAlerts(raw, REF);
+    expect(result.records).toHaveLength(1);
+  });
+
+  // 11a. Invalid referenceDate (non-date string)
+  it("returns invalid reference date error for a non-date referenceDate", () => {
+    const result = parseAlerts("any text", "not-a-date");
+    expect(result.records).toHaveLength(0);
+    expect(result.unparseable).toHaveLength(1);
+    expect(result.unparseable[0].reason).toBe("invalid reference date");
+  });
+
+  // 11b. Invalid referenceDate (impossible calendar date)
+  it("returns invalid reference date error for an impossible referenceDate", () => {
+    const result = parseAlerts("any text", "2024-02-30");
+    expect(result.records).toHaveLength(0);
+    expect(result.unparseable).toHaveLength(1);
+    expect(result.unparseable[0].reason).toBe("invalid reference date");
+  });
+
+  // 12. rawText > 200,000 chars → input too large
+  it("returns input too large error when rawText exceeds 200,000 characters", () => {
+    const result = parseAlerts("A".repeat(200001), REF);
+    expect(result.records).toHaveLength(0);
+    expect(result.unparseable).toHaveLength(1);
+    expect(result.unparseable[0].reason).toBe("input too large");
+  });
+
+  // 13. Leading/trailing whitespace on lines → no parse error
+  it("handles extra leading/trailing whitespace on each line without error", () => {
+    const raw = [
+      "  Debit Alert  ",
+      "  Amt: NGN 1,000.00  ",
+      "  Desc: ZapTunes  ",
+      "  Date: 15/03/2024  ",
+    ].join("\n");
+
+    const result = parseAlerts(raw, REF);
+    expect(result.records).toHaveLength(1);
+    expect(result.unparseable).toHaveLength(0);
+  });
+});

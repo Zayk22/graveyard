@@ -66,7 +66,7 @@ Implement two pure TypeScript modules — `alertParser` and `hauntingDetector` �
     - Pass through `parseAlertDate` sentinel reasons directly: `"invalid date"`, `"missing date"`
     - Return `UnparseableMessage` if no format matches
     - _Requirements: 1.1–1.14_
-  - [ ] 4.2 Implement `parseAlerts(rawText: string, referenceDate: string): ParseResult` in `src/lib/alertParser.ts`
+  - [x] 4.2 Implement `parseAlerts(rawText: string, referenceDate: string): ParseResult` in `src/lib/alertParser.ts`
     - Validate `referenceDate` is a real ISO-8601 `YYYY-MM-DD` date; return `{ records: [], unparseable: [{ lineNumber: 1, reason: "invalid reference date", rawText: "" }] }` on failure
     - Short-circuit if `rawText.length > 200_000`: return `{ records: [], unparseable: [{ lineNumber: 1, reason: "input too large", rawText: "" }] }`
     - Wrap the full pipeline in try/catch; add any unexpected exception as unparseable with reason `"internal error"`
