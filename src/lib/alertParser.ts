@@ -463,7 +463,7 @@ function splitMessagesWithOffsets(raw: string): Array<{ text: string; lineOffset
   };
 
   const addLine = (line: string, index: number) => {
-    if (currentLines.length === 0) currentStart = index + 1;
+   if (currentLines.length === 0) currentStart = index + 1;
     currentLines.push(line);
   };
 

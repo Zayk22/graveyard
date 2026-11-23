@@ -5,10 +5,10 @@ import {
   deriveDisplayName,
   parseAlertDate,
   splitMessages,
+  parseAlerts,
 } from "./alertParser";
 import { deduplicateRecords } from "./dedupe";
 import type { DebitRecord } from "./types";
-
 // ─── parseNgnAmount ──────────────────────────────────────────────────────────
 
 describe("parseNgnAmount", () => {
@@ -481,7 +481,7 @@ describe("deduplicateRecords", () => {
 
 // ─── parseAlerts ─────────────────────────────────────────────────────────────
 
-import { parseAlerts } from "./alertParser";
+
 
 describe("parseAlerts", () => {
   const REF = "2024-03-15";
@@ -657,5 +657,84 @@ describe("parseAlerts", () => {
     const result = parseAlerts(raw, REF);
     expect(result.records).toHaveLength(1);
     expect(result.unparseable).toHaveLength(0);
+  });
+});
+describe("parseAlerts edge cases", () => {
+  const REF_DATE = "2026-11-23";
+
+  it("parses a Format B alert whose merchant contains ' on '", () => {
+    const raw = "Your account was debited NGN 2,500.00 for Netflix on demand on 15/03/2024";
+    const result = parseAlerts(raw, REF_DATE);
+    expect(result.unparseable).toHaveLength(0);
+    expect(result.records).toEqual([
+      {
+        amount: 250000,
+        date: "2024-03-15",
+        normalisedMerchant: "netflix on demand",
+        displayName: "Netflix on demand",
+      },
+    ]);
+  });
+
+  it("reports 'missing date' for a Format A alert with no Date line", () => {
+    const raw = "Debit Alert\nAmt: NGN 1,000.00\nDesc: Spotify";
+    const result = parseAlerts(raw, REF_DATE);
+    expect(result.records).toHaveLength(0);
+    expect(result.unparseable).toHaveLength(1);
+    expect(result.unparseable[0].reason).toBe("missing date");
+  });
+
+  it("reports 'missing merchant' for a Format A alert with an empty Desc", () => {
+    const raw = "Debit Alert\nAmt: NGN 1,000.00\nDesc:\nDate: 15/03/2024";
+    const result = parseAlerts(raw, REF_DATE);
+    expect(result.records).toHaveLength(0);
+    expect(result.unparseable).toHaveLength(1);
+    expect(result.unparseable[0].reason).toBe("missing merchant");
+  });
+
+  it("reports 'invalid date' for an impossible date", () => {
+    const raw = "Debit Alert\nAmt: NGN 1,000.00\nDesc: Spotify\nDate: 31/02/2024";
+    const result = parseAlerts(raw, REF_DATE);
+    expect(result.records).toHaveLength(0);
+    expect(result.unparseable[0].reason).toBe("invalid date");
+  });
+
+  it("reports 'unrecognised format' for text with no debit or credit phrase", () => {
+    const result = parseAlerts("Hello, this is just a note", REF_DATE);
+    expect(result.records).toHaveLength(0);
+    expect(result.unparseable).toHaveLength(1);
+    expect(result.unparseable[0].reason).toBe("unrecognised format");
+  });
+
+  it("gives lineNumber 1 for a message that starts on the first line", () => {
+    const result = parseAlerts("just a note", REF_DATE);
+    expect(result.unparseable[0].lineNumber).toBe(1);
+  });
+
+  it("gives the right lineNumber for a headerless message after a blank line", () => {
+    const raw = [
+      "Debit Alert",
+      "Amt: NGN 100.00",
+      "Desc: Shop",
+      "Date: 01/01/2024",
+      "",
+      "random note without keywords",
+    ].join("\n");
+    const result = parseAlerts(raw, REF_DATE);
+    expect(result.records).toHaveLength(1);
+    expect(result.unparseable).toHaveLength(1);
+    expect(result.unparseable[0].lineNumber).toBe(6);
+  });
+
+  it("counts leading blank lines in lineNumber", () => {
+    const result = parseAlerts("\n\n\nsome random note", REF_DATE);
+    expect(result.unparseable).toHaveLength(1);
+    expect(result.unparseable[0].lineNumber).toBe(4);
+  });
+
+  it("gives the right lineNumbers when messages are separated by several blank lines", () => {
+    const raw = "first note\n\n\n\nsecond note";
+    const result = parseAlerts(raw, REF_DATE);
+    expect(result.unparseable.map((u) => u.lineNumber)).toEqual([1, 5]);
   });
 });
