@@ -53,7 +53,7 @@ Implement two pure TypeScript modules — `alertParser` and `hauntingDetector` �
     - `deduplicateRecords` will be in `src/lib/dedupe.ts` (see task 7.8); in this task, wire `alertParser.ts` to import and use it via `import { deduplicateRecords } from './dedupe'`
     - _Requirements: 1.15_
 
-- [ ] 4. Implement `parseMessage` and `parseAlerts` entry point
+- [x] 4. Implement `parseMessage` and `parseAlerts` entry point
   - [x] 4.1 Implement `parseMessage(msg: string, lineOffset: number, refDate: string): DebitRecord | UnparseableMessage | null` in `src/lib/alertParser.ts`
     - Return type is `DebitRecord | UnparseableMessage | null` where `null` means a credit alert (caller silently excludes it)
     - Run debit/credit detection first (case-insensitive phrases `"debited"`, `"Debit Alert"`, `"Account Debit"` for debit; `"credited"`, `"Credit Alert"` for credit); bare words `"debit"` / `"credit"` alone do NOT match
@@ -73,7 +73,7 @@ Implement two pure TypeScript modules — `alertParser` and `hauntingDetector` �
     - Call `splitMessages`, then `parseMessage` on each segment, then `deduplicateRecords`
     - _Requirements: 1.1–1.16_
 
-- [ ] 5. Write unit tests for the Alert Parser
+- [x] 5. Write unit tests for the Alert Parser
   - [x] 5.1 Write unit tests for Alert Parser helpers in `src/lib/alertParser.test.ts`
     - `parseNgnAmount`: NGN with/without kobo, commas, non-NGN currency, invalid amount
     - `normaliseMerchant`: digit removal, ref-style token removal, punctuation stripping, empty result
@@ -184,7 +184,7 @@ Implement two pure TypeScript modules — `alertParser` and `hauntingDetector` �
     - `displayName` taken from most recent charge; alphabetically first when dates tie
     - _Requirements: 3.1–3.17, 4.1–4.2_
 
-- [ ] 10. Create the public API re-export
+- [x] 10. Create the public API re-export
   - Create `src/lib/index.ts` re-exporting `parseAlerts`, `detectHauntings`, and `formatNaira`
   - _Requirements: 1.1, 2.5, 3.1_
 
