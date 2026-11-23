@@ -146,3 +146,14 @@ export function groupByMerchant(
   }
   return map;
 }
+
+// ── 8.1 — sortHauntings ──────────────────────────────────────────────────────
+
+export function sortHauntings(hauntings: Haunting[]): Haunting[] {
+  return [...hauntings].sort((a, b) => {
+    if (b.estimatedMonthlyCost !== a.estimatedMonthlyCost) {
+      return b.estimatedMonthlyCost - a.estimatedMonthlyCost;
+    }
+    return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
+  });
+}

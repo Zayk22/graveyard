@@ -204,6 +204,13 @@
         "chatSessionId": "sess_f50abd50-1894-4022-88ac-8fbd7dc7180c",
         "timestamp": 1795433149666
       }
+    ],
+    "8.1 Implement `sortHauntings(hauntings: Haunting[]): Haunting[]` in `src/lib/hauntingDetector.ts`": [
+      {
+        "executionId": "96fb62c3-95a1-45db-bbb0-f60b5e076317",
+        "chatSessionId": "sess_e417f679-6e60-4a28-8f91-8b4c47c04e77",
+        "timestamp": 1795434202834
+      }
     ]
   }
 }
