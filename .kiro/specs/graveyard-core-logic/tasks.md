@@ -138,11 +138,11 @@ Implement two pure TypeScript modules — `alertParser` and `hauntingDetector` �
     - Delete or do not create the duplicate `deduplicateRecords` in `hauntingDetector.ts`
     - _Requirements: 1.15, 3.2_
 
-- [ ] 8. Implement `sortHauntings` and `detectHauntings` entry point
+- [x] 8. Implement `sortHauntings` and `detectHauntings` entry point
  - [x] 8.1 Implement `sortHauntings(hauntings: Haunting[]): Haunting[]` in `src/lib/hauntingDetector.ts`
     - Sort by `estimatedMonthlyCost` descending, then `id` ascending
     - _Requirements: 4.2_
-  - [ ] 8.2 Implement `detectHauntings(records: DebitRecord[], referenceDate: string): Haunting[]` in `src/lib/hauntingDetector.ts`
+  - [x] 8.2 Implement `detectHauntings(records: DebitRecord[], referenceDate: string): Haunting[]` in `src/lib/hauntingDetector.ts`
     - Validate `referenceDate`; return `[]` on failure
     - Call `groupByMerchant`, then per group:
       1. `deduplicateRecords` on the group
@@ -159,8 +159,8 @@ Implement two pure TypeScript modules — `alertParser` and `hauntingDetector` �
     - Call `sortHauntings` on the result before returning
     - _Requirements: 3.1–3.17, 4.1–4.2_
 
-- [ ] 9. Write unit tests for the Haunting Detector
-  - [ ] 9.1 Write unit tests for Haunting Detector helpers in `src/lib/hauntingDetector.test.ts`
+- [x] 9. Write unit tests for the Haunting Detector
+  - [x] 9.1 Write unit tests for Haunting Detector helpers in `src/lib/hauntingDetector.test.ts`
     - `computeMedian`: odd and even arrays, round-half-up for even
     - `filterByTolerance`: boundary values at exactly ±10%
     - `computeGaps`: gaps across month boundaries, year boundaries
@@ -170,7 +170,7 @@ Implement two pure TypeScript modules — `alertParser` and `hauntingDetector` �
     - `assignStatus`: active just before lapse boundary, lapsed just after
     - `stableId`: spaces → hyphens, deterministic output
     - _Requirements: 3.4–3.14_
-  - [ ] 9.2 Write unit tests for `detectHauntings` entry point in `src/lib/hauntingDetector.test.ts`
+  - [x] 9.2 Write unit tests for `detectHauntings` entry point in `src/lib/hauntingDetector.test.ts`
     - Fewer than 3 qualifying charges → no haunting
     - 3 monthly charges → one haunting with correct `typicalAmount`, `nextExpectedDate`, `status`
     - Out-of-tolerance charges included in `chargeCount`/`sourceCharges`, excluded from median

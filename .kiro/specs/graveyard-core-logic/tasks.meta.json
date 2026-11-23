@@ -217,6 +217,49 @@
         "executionId": "61368b24-f966-4295-9786-5e0784fe2551",
         "chatSessionId": "sess_6b55584a-f2cb-4350-bca7-f56604745614",
         "timestamp": 1795434467256
+      },
+      {
+        "executionId": "a79b3d64-bbe6-4ef6-81e5-1fd0ac842550",
+        "chatSessionId": "sess_6b55584a-f2cb-4350-bca7-f56604745614",
+        "timestamp": 1795435103837
+      }
+    ],
+    "8. Implement `sortHauntings` and `detectHauntings` entry point": [
+      {
+        "executionId": "a79b3d64-bbe6-4ef6-81e5-1fd0ac842550",
+        "chatSessionId": "sess_6b55584a-f2cb-4350-bca7-f56604745614",
+        "timestamp": 1795435104040
+      }
+    ],
+    "9.1 Write unit tests for Haunting Detector helpers in `src/lib/hauntingDetector.test.ts`": [
+      {
+        "executionId": "a79b3d64-bbe6-4ef6-81e5-1fd0ac842550",
+        "chatSessionId": "sess_6b55584a-f2cb-4350-bca7-f56604745614",
+        "timestamp": 1795435108441
+      },
+      {
+        "executionId": "a79b3d64-bbe6-4ef6-81e5-1fd0ac842550",
+        "chatSessionId": "sess_6b55584a-f2cb-4350-bca7-f56604745614",
+        "timestamp": 1795435211495
+      }
+    ],
+    "9.2 Write unit tests for `detectHauntings` entry point in `src/lib/hauntingDetector.test.ts`": [
+      {
+        "executionId": "a79b3d64-bbe6-4ef6-81e5-1fd0ac842550",
+        "chatSessionId": "sess_6b55584a-f2cb-4350-bca7-f56604745614",
+        "timestamp": 1795435113582
+      },
+      {
+        "executionId": "a79b3d64-bbe6-4ef6-81e5-1fd0ac842550",
+        "chatSessionId": "sess_6b55584a-f2cb-4350-bca7-f56604745614",
+        "timestamp": 1795435215502
+      }
+    ],
+    "9. Write unit tests for the Haunting Detector": [
+      {
+        "executionId": "a79b3d64-bbe6-4ef6-81e5-1fd0ac842550",
+        "chatSessionId": "sess_6b55584a-f2cb-4350-bca7-f56604745614",
+        "timestamp": 1795435215677
       }
     ]
   }
