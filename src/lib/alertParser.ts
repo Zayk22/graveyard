@@ -271,19 +271,21 @@ const DEBIT_RE = /\bdebited\b|debit alert|account debit/i;
  */
 const CREDIT_RE = /\bcredited\b|credit alert/i;
 
-// Format A regexes (applied per-line after trimming)
-const FORMAT_A_AMT_RE = /^Amt:\s*(.+)$/i;
-const FORMAT_A_DESC_RE = /^Desc:\s*(.+)$/i;
-const FORMAT_A_DATE_RE = /^Date:\s*(.+)$/i;
+// Format A regexes (applied per-line after trimming). Empty values are allowed
+// so that a missing field gives a specific reason instead of "unrecognised format".
+const FORMAT_A_AMT_RE = /^Amt:\s*(.*)$/i;
+const FORMAT_A_DESC_RE = /^Desc:\s*(.*)$/i;
+const FORMAT_A_DATE_RE = /^Date:\s*(.*)$/i;
 
-// Format B regex (applied to full message text)
+// Format B regex (applied to full message text).
+// The date must start with a digit so a merchant containing " on " still works.
 const FORMAT_B_RE =
-  /debited\s+((?:NGN|₦)\s?[\d,]+(?:\.\d{1,2})?)\s+for\s+(.+?)\s+on\s+([\d/\-A-Za-z]+)/i;
+  /debited\s+((?:NGN|₦)\s?[\d,]+(?:\.\d{1,2})?)\s+for\s+(.+?)\s+on\s+(\d[\d/\-A-Za-z]*)/i;
 
 // Format C regexes (applied per-line after trimming)
-const FORMAT_C_AMT_RE = /^Amount:\s*(.+)$/i;
-const FORMAT_C_DESC_RE = /^Description:\s*(.+)$/i;
-const FORMAT_C_DATE_RE = /^Value Date:\s*(.+)$/i;
+const FORMAT_C_AMT_RE = /^Amount:\s*(.*)$/i;
+const FORMAT_C_DESC_RE = /^Description:\s*(.*)$/i;
+const FORMAT_C_DATE_RE = /^Value Date:\s*(.*)$/i;
 
 /**
  * Attempts to parse a single Alert_Message string into a DebitRecord.
@@ -340,8 +342,8 @@ export function parseMessage(
       if (dateMatch) { dateRaw = dateMatch[1].trim(); continue; }
     }
 
-    if (amtRaw !== null && descRaw !== null && dateRaw !== null) {
-      return buildRecord(amtRaw, descRaw, dateRaw, lineOffset, refDate, msg);
+    if (amtRaw !== null && (descRaw !== null || dateRaw !== null)) {
+      return buildRecord(amtRaw, descRaw ?? "", dateRaw ?? "", lineOffset, refDate, msg);
     }
   }
 
@@ -371,8 +373,8 @@ export function parseMessage(
       if (dateMatch) { dateRaw = dateMatch[1].trim(); continue; }
     }
 
-    if (amtRaw !== null && descRaw !== null && dateRaw !== null) {
-      return buildRecord(amtRaw, descRaw, dateRaw, lineOffset, refDate, msg);
+    if (amtRaw !== null && (descRaw !== null || dateRaw !== null)) {
+      return buildRecord(amtRaw, descRaw ?? "", dateRaw ?? "", lineOffset, refDate, msg);
     }
   }
 
@@ -417,6 +419,9 @@ function buildRecord(
   }
 
   // Date
+  if (dateRaw.trim() === "") {
+    return makeUnparseable("missing date");
+  }
   const dateResult = parseAlertDate(dateRaw, refDate);
   if (dateResult === "invalid") {
     return makeUnparseable("invalid date");
