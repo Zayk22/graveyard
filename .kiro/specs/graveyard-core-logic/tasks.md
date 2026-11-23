@@ -82,7 +82,7 @@ Implement two pure TypeScript modules — `alertParser` and `hauntingDetector` �
     - `splitMessages`: blank-line split, header-pattern split, Format B consecutive alerts
     - `deduplicateRecords`: removes same triple, keeps different triples
     - _Requirements: 1.1–1.16, 2.1–2.4_
-  - [ ] 5.2 Write unit tests for `parseAlerts` entry point in `src/lib/alertParser.test.ts`
+- [x] 5.2 Write unit tests for `parseAlerts` entry point in `src/lib/alertParser.test.ts`
     - Single well-formed Format A alert → one DebitRecord
     - Single well-formed Format B alert → one DebitRecord
     - Single well-formed Format C alert → one DebitRecord
@@ -97,37 +97,37 @@ Implement two pure TypeScript modules — `alertParser` and `hauntingDetector` �
     - Leading/trailing whitespace on lines → no parse error
     - _Requirements: 1.1–1.16_
 
-- [ ] 6. Checkpoint — Alert Parser complete
+- [x] 6. Checkpoint — Alert Parser complete
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 7. Implement Haunting Detector helpers
-  - [ ] 7.1 Implement `roundHalfUp(n: number): number` and `computeMedian(amounts: number[]): number` in `src/lib/hauntingDetector.ts`
+- [x] 7. Implement Haunting Detector helpers
+  - [x] 7.1 Implement `roundHalfUp(n: number): number` and `computeMedian(amounts: number[]): number` in `src/lib/hauntingDetector.ts`
     - `roundHalfUp`: `Math.floor(n + 0.5)`
     - `computeMedian`: sort the array, return middle value for odd length; for even length, average of two middle values using `roundHalfUp`
     - _Requirements: 3.7_
-  - [ ] 7.2 Implement `filterByTolerance(records: DebitRecord[], median: number): DebitRecord[]` in `src/lib/hauntingDetector.ts`
+  - [x] 7.2 Implement `filterByTolerance(records: DebitRecord[], median: number): DebitRecord[]` in `src/lib/hauntingDetector.ts`
     - Return records whose `amount` is within ±10% of `median`
     - _Requirements: 3.3, 3.8_
-  - [ ] 7.3 Implement `computeGaps(sortedDates: string[]): number[]` and `classifyInterval(gaps: number[]): Interval | null` in `src/lib/hauntingDetector.ts`
+  - [x] 7.3 Implement `computeGaps(sortedDates: string[]): number[]` and `classifyInterval(gaps: number[]): Interval | null` in `src/lib/hauntingDetector.ts`
     - `computeGaps`: compute UTC day-difference between consecutive ISO-8601 dates using `Date.UTC`; never local time
     - `classifyInterval`: return `"weekly"` if every gap is 5–9, `"monthly"` if 25–35, `"yearly"` if 355–375; null otherwise
     - _Requirements: 3.4, 3.5, 3.6, 3.17_
-  - [ ] 7.4 Implement `computeNextDate(lastDate: string, interval: Interval): string` in `src/lib/hauntingDetector.ts`
+  - [x] 7.4 Implement `computeNextDate(lastDate: string, interval: Interval): string` in `src/lib/hauntingDetector.ts`
     - Weekly: `lastDate + 7` days using UTC day arithmetic
     - Monthly: same day + 1 calendar month with month-end clamping (Jan 31 → Feb 28/29)
     - Yearly: same day + 1 year with leap-year clamping (Feb 29 → Feb 28 in non-leap years)
     - Return ISO-8601 string
     - _Requirements: 3.9, 3.10, 3.11_
-  - [ ] 7.5 Implement `computeMonthlyCost(typicalAmount: number, interval: Interval): number` in `src/lib/hauntingDetector.ts`
+  - [x] 7.5 Implement `computeMonthlyCost(typicalAmount: number, interval: Interval): number` in `src/lib/hauntingDetector.ts`
     - Weekly: `roundHalfUp((typicalAmount * 52) / 12)`
     - Monthly: `typicalAmount`
     - Yearly: `roundHalfUp(typicalAmount / 12)`
     - _Requirements: 3.12_
-  - [ ] 7.6 Implement `assignStatus(nextDate: string, interval: Interval, refDate: string): HauntingStatus` in `src/lib/hauntingDetector.ts`
+  - [x] 7.6 Implement `assignStatus(nextDate: string, interval: Interval, refDate: string): HauntingStatus` in `src/lib/hauntingDetector.ts`
     - Compute one full interval period past `nextDate`; if `refDate` exceeds that, return `"lapsed"`; otherwise `"active"`
     - All comparisons use UTC day numbers
     - _Requirements: 3.13_
-  - [ ] 7.7 Implement `stableId(normalisedMerchant: string, interval: Interval): string` in `src/lib/hauntingDetector.ts`
+  - [x] 7.7 Implement `stableId(normalisedMerchant: string, interval: Interval): string` in `src/lib/hauntingDetector.ts`
     - Return `${normalisedMerchant}-${interval}` with spaces replaced by hyphens
     - _Requirements: 3.14_
   - [x] 7.8 Create shared deduplication helper in `src/lib/dedupe.ts`

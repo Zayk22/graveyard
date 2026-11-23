@@ -101,6 +101,109 @@
         "chatSessionId": "sess_eb366069-c169-4c24-9ad3-650f88080eb5",
         "timestamp": 1795428224491
       }
+    ],
+    "6. Checkpoint — Alert Parser complete": [
+      {
+        "executionId": "569eb7ee-36e4-4bd9-a7a0-d9323db889f5",
+        "chatSessionId": "sess_f50abd50-1894-4022-88ac-8fbd7dc7180c",
+        "timestamp": 1795432796062
+      },
+      {
+        "executionId": "569eb7ee-36e4-4bd9-a7a0-d9323db889f5",
+        "chatSessionId": "sess_f50abd50-1894-4022-88ac-8fbd7dc7180c",
+        "timestamp": 1795432799742
+      }
+    ],
+    "7.1 Implement `roundHalfUp(n: number): number` and `computeMedian(amounts: number[]): number` in `src/lib/hauntingDetector.ts`": [
+      {
+        "executionId": "9849b104-5cca-4773-b8c7-a024fdc58094",
+        "chatSessionId": "sess_f50abd50-1894-4022-88ac-8fbd7dc7180c",
+        "timestamp": 1795433085227
+      },
+      {
+        "executionId": "9849b104-5cca-4773-b8c7-a024fdc58094",
+        "chatSessionId": "sess_f50abd50-1894-4022-88ac-8fbd7dc7180c",
+        "timestamp": 1795433142147
+      }
+    ],
+    "7.2 Implement `filterByTolerance(records: DebitRecord[], median: number): DebitRecord[]` in `src/lib/hauntingDetector.ts`": [
+      {
+        "executionId": "9849b104-5cca-4773-b8c7-a024fdc58094",
+        "chatSessionId": "sess_f50abd50-1894-4022-88ac-8fbd7dc7180c",
+        "timestamp": 1795433088598
+      },
+      {
+        "executionId": "9849b104-5cca-4773-b8c7-a024fdc58094",
+        "chatSessionId": "sess_f50abd50-1894-4022-88ac-8fbd7dc7180c",
+        "timestamp": 1795433145445
+      }
+    ],
+    "7.3 Implement `computeGaps(sortedDates: string[]): number[]` and `classifyInterval(gaps: number[]): Interval | null` in `src/lib/hauntingDetector.ts`": [
+      {
+        "executionId": "9849b104-5cca-4773-b8c7-a024fdc58094",
+        "chatSessionId": "sess_f50abd50-1894-4022-88ac-8fbd7dc7180c",
+        "timestamp": 1795433089051
+      },
+      {
+        "executionId": "9849b104-5cca-4773-b8c7-a024fdc58094",
+        "chatSessionId": "sess_f50abd50-1894-4022-88ac-8fbd7dc7180c",
+        "timestamp": 1795433146221
+      }
+    ],
+    "7.4 Implement `computeNextDate(lastDate: string, interval: Interval): string` in `src/lib/hauntingDetector.ts`": [
+      {
+        "executionId": "9849b104-5cca-4773-b8c7-a024fdc58094",
+        "chatSessionId": "sess_f50abd50-1894-4022-88ac-8fbd7dc7180c",
+        "timestamp": 1795433089742
+      },
+      {
+        "executionId": "9849b104-5cca-4773-b8c7-a024fdc58094",
+        "chatSessionId": "sess_f50abd50-1894-4022-88ac-8fbd7dc7180c",
+        "timestamp": 1795433146793
+      }
+    ],
+    "7.5 Implement `computeMonthlyCost(typicalAmount: number, interval: Interval): number` in `src/lib/hauntingDetector.ts`": [
+      {
+        "executionId": "9849b104-5cca-4773-b8c7-a024fdc58094",
+        "chatSessionId": "sess_f50abd50-1894-4022-88ac-8fbd7dc7180c",
+        "timestamp": 1795433090287
+      },
+      {
+        "executionId": "9849b104-5cca-4773-b8c7-a024fdc58094",
+        "chatSessionId": "sess_f50abd50-1894-4022-88ac-8fbd7dc7180c",
+        "timestamp": 1795433147405
+      }
+    ],
+    "7.6 Implement `assignStatus(nextDate: string, interval: Interval, refDate: string): HauntingStatus` in `src/lib/hauntingDetector.ts`": [
+      {
+        "executionId": "9849b104-5cca-4773-b8c7-a024fdc58094",
+        "chatSessionId": "sess_f50abd50-1894-4022-88ac-8fbd7dc7180c",
+        "timestamp": 1795433090741
+      },
+      {
+        "executionId": "9849b104-5cca-4773-b8c7-a024fdc58094",
+        "chatSessionId": "sess_f50abd50-1894-4022-88ac-8fbd7dc7180c",
+        "timestamp": 1795433148079
+      }
+    ],
+    "7.7 Implement `stableId(normalisedMerchant: string, interval: Interval): string` in `src/lib/hauntingDetector.ts`": [
+      {
+        "executionId": "9849b104-5cca-4773-b8c7-a024fdc58094",
+        "chatSessionId": "sess_f50abd50-1894-4022-88ac-8fbd7dc7180c",
+        "timestamp": 1795433091598
+      },
+      {
+        "executionId": "9849b104-5cca-4773-b8c7-a024fdc58094",
+        "chatSessionId": "sess_f50abd50-1894-4022-88ac-8fbd7dc7180c",
+        "timestamp": 1795433149093
+      }
+    ],
+    "7. Implement Haunting Detector helpers": [
+      {
+        "executionId": "9849b104-5cca-4773-b8c7-a024fdc58094",
+        "chatSessionId": "sess_f50abd50-1894-4022-88ac-8fbd7dc7180c",
+        "timestamp": 1795433149666
+      }
     ]
   }
 }
