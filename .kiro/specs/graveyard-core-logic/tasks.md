@@ -54,7 +54,7 @@ Implement two pure TypeScript modules â€” `alertParser` and `hauntingDetector` â
     - _Requirements: 1.15_
 
 - [ ] 4. Implement `parseMessage` and `parseAlerts` entry point
-  - [ ] 4.1 Implement `parseMessage(msg: string, lineOffset: number, refDate: string): DebitRecord | UnparseableMessage | null` in `src/lib/alertParser.ts`
+  - [x] 4.1 Implement `parseMessage(msg: string, lineOffset: number, refDate: string): DebitRecord | UnparseableMessage | null` in `src/lib/alertParser.ts`
     - Return type is `DebitRecord | UnparseableMessage | null` where `null` means a credit alert (caller silently excludes it)
     - Run debit/credit detection first (case-insensitive phrases `"debited"`, `"Debit Alert"`, `"Account Debit"` for debit; `"credited"`, `"Credit Alert"` for credit); bare words `"debit"` / `"credit"` alone do NOT match
     - If both debit and credit patterns match, return `UnparseableMessage` with reason `"ambiguous alert type"`

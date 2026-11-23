@@ -1,4 +1,4 @@
-import type { AmountResult } from "./types";
+import type { AmountResult, DebitRecord, UnparseableMessage } from "./types";
 import { deduplicateRecords } from "./dedupe";
 
 // ─── 3.1 parseNgnAmount ────────────────────────────────────────────────────
@@ -255,4 +255,180 @@ export function splitMessages(raw: string): string[] {
 
   flushCurrent();
   return segments;
+}
+
+// ─── 4.1 parseMessage ────────────────────────────────────────────────────────
+
+/**
+ * Debit detection: matches the phrases "debited", "Debit Alert", "Account Debit"
+ * as whole phrases (not bare "debit" alone).
+ */
+const DEBIT_RE = /\bdebited\b|debit alert|account debit/i;
+
+/**
+ * Credit detection: matches the phrases "credited", "Credit Alert"
+ * as whole phrases (not bare "credit" alone).
+ */
+const CREDIT_RE = /\bcredited\b|credit alert/i;
+
+// Format A regexes (applied per-line after trimming)
+const FORMAT_A_AMT_RE = /^Amt:\s*(.+)$/i;
+const FORMAT_A_DESC_RE = /^Desc:\s*(.+)$/i;
+const FORMAT_A_DATE_RE = /^Date:\s*(.+)$/i;
+
+// Format B regex (applied to full message text)
+const FORMAT_B_RE =
+  /debited\s+((?:NGN|₦)\s?[\d,]+(?:\.\d{1,2})?)\s+for\s+(.+?)\s+on\s+([\d/\-A-Za-z]+)/i;
+
+// Format C regexes (applied per-line after trimming)
+const FORMAT_C_AMT_RE = /^Amount:\s*(.+)$/i;
+const FORMAT_C_DESC_RE = /^Description:\s*(.+)$/i;
+const FORMAT_C_DATE_RE = /^Value Date:\s*(.+)$/i;
+
+/**
+ * Attempts to parse a single Alert_Message string into a DebitRecord.
+ * Returns:
+ *   - `DebitRecord` on success
+ *   - `UnparseableMessage` when the message is a debit alert but cannot be fully parsed
+ *   - `null` when the message is a credit alert (caller silently excludes it)
+ *
+ * Exported for direct unit testing.
+ */
+export function parseMessage(
+  msg: string,
+  lineOffset: number,
+  refDate: string
+): DebitRecord | UnparseableMessage | null {
+  const makeUnparseable = (reason: string): UnparseableMessage => ({
+    lineNumber: lineOffset,
+    reason,
+    rawText: msg,
+  });
+
+  const isDebit = DEBIT_RE.test(msg);
+  const isCredit = CREDIT_RE.test(msg);
+
+  if (isDebit && isCredit) {
+    return makeUnparseable("ambiguous alert type");
+  }
+
+  if (!isDebit && !isCredit) {
+    return makeUnparseable("unrecognised format");
+  }
+
+  if (isCredit) {
+    // Credit alert — silently exclude
+    return null;
+  }
+
+  // ── Debit alert: attempt Format A, then B, then C ───────────────────────
+
+  const lines = msg.split("\n").map((l) => l.trim());
+
+  // ── Format A ─────────────────────────────────────────────────────────────
+  {
+    let amtRaw: string | null = null;
+    let descRaw: string | null = null;
+    let dateRaw: string | null = null;
+
+    for (const line of lines) {
+      const amtMatch = FORMAT_A_AMT_RE.exec(line);
+      if (amtMatch) { amtRaw = amtMatch[1].trim(); continue; }
+      const descMatch = FORMAT_A_DESC_RE.exec(line);
+      if (descMatch) { descRaw = descMatch[1].trim(); continue; }
+      const dateMatch = FORMAT_A_DATE_RE.exec(line);
+      if (dateMatch) { dateRaw = dateMatch[1].trim(); continue; }
+    }
+
+    if (amtRaw !== null && descRaw !== null && dateRaw !== null) {
+      return buildRecord(amtRaw, descRaw, dateRaw, lineOffset, refDate, msg);
+    }
+  }
+
+  // ── Format B ─────────────────────────────────────────────────────────────
+  {
+    const match = FORMAT_B_RE.exec(msg);
+    if (match) {
+      const amtRaw = match[1].trim();
+      const descRaw = match[2].trim();
+      const dateRaw = match[3].trim();
+      return buildRecord(amtRaw, descRaw, dateRaw, lineOffset, refDate, msg);
+    }
+  }
+
+  // ── Format C ─────────────────────────────────────────────────────────────
+  {
+    let amtRaw: string | null = null;
+    let descRaw: string | null = null;
+    let dateRaw: string | null = null;
+
+    for (const line of lines) {
+      const amtMatch = FORMAT_C_AMT_RE.exec(line);
+      if (amtMatch) { amtRaw = amtMatch[1].trim(); continue; }
+      const descMatch = FORMAT_C_DESC_RE.exec(line);
+      if (descMatch) { descRaw = descMatch[1].trim(); continue; }
+      const dateMatch = FORMAT_C_DATE_RE.exec(line);
+      if (dateMatch) { dateRaw = dateMatch[1].trim(); continue; }
+    }
+
+    if (amtRaw !== null && descRaw !== null && dateRaw !== null) {
+      return buildRecord(amtRaw, descRaw, dateRaw, lineOffset, refDate, msg);
+    }
+  }
+
+  // No format matched
+  return {
+    lineNumber: lineOffset,
+    reason: "unrecognised format",
+    rawText: msg,
+  };
+}
+
+/**
+ * Shared field-validation and record-construction helper used by all three
+ * format branches.  Returns a DebitRecord or an UnparseableMessage.
+ */
+function buildRecord(
+  amtRaw: string,
+  descRaw: string,
+  dateRaw: string,
+  lineOffset: number,
+  refDate: string,
+  rawMsg: string
+): DebitRecord | UnparseableMessage {
+  const makeUnparseable = (reason: string): UnparseableMessage => ({
+    lineNumber: lineOffset,
+    reason,
+    rawText: rawMsg,
+  });
+
+  // Merchant first — gives the most specific error when it fails
+  const normMerchant = normaliseMerchant(descRaw);
+  if (normMerchant === "") {
+    return makeUnparseable("missing merchant");
+  }
+
+  const displayName = deriveDisplayName(descRaw);
+
+  // Amount
+  const amtResult = parseNgnAmount(amtRaw);
+  if (!amtResult.ok) {
+    return makeUnparseable(amtResult.reason);
+  }
+
+  // Date
+  const dateResult = parseAlertDate(dateRaw, refDate);
+  if (dateResult === "invalid") {
+    return makeUnparseable("invalid date");
+  }
+  if (dateResult === "missing") {
+    return makeUnparseable("missing date");
+  }
+
+  return {
+    amount: amtResult.kobo,
+    date: dateResult,
+    normalisedMerchant: normMerchant,
+    displayName,
+  };
 }
