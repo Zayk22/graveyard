@@ -437,3 +437,132 @@ function buildRecord(
     displayName,
   };
 }
+
+// ─── parseAlerts (public entry point) ───────────────────────────────────────
+
+/** ISO-8601 date pattern validator */
+const ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+
+/**
+ * Splits raw text into segments paired with their 1-based starting line number.
+ * Mirrors splitMessages but also returns the line offset of each segment.
+ */
+function splitMessagesWithOffsets(raw: string): Array<{ text: string; lineOffset: number }> {
+  const lines = raw.split("\n");
+  const results: Array<{ text: string; lineOffset: number }> = [];
+
+  let currentLines: string[] = [];
+  let currentStart = 1; // 1-based line number of the first line in currentLines
+
+  const flushCurrent = () => {
+    const seg = currentLines.join("\n").trim();
+    if (seg.length > 0) {
+      results.push({ text: seg, lineOffset: currentStart });
+    }
+    currentLines = [];
+  };
+
+  const addLine = (line: string, index: number) => {
+    if (currentLines.length === 0) currentStart = index + 1;
+    currentLines.push(line);
+  };
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const trimmedLine = line.trim();
+
+    if (trimmedLine.length === 0) {
+      flushCurrent();
+      continue;
+    }
+
+    if (ALERT_HEADER_RE.test(trimmedLine) || FORMAT_B_INLINE_RE.test(trimmedLine)) {
+      flushCurrent();
+    }
+
+    addLine(line, i);
+  }
+
+  flushCurrent();
+  return results;
+}
+
+/**
+ * Top-level entry point.  Accepts raw pasted alert text and a Reference_Date,
+ * and returns structured DebitRecords plus any unparseable messages.
+ */
+export function parseAlerts(
+  rawText: string,
+  referenceDate: string
+): import("./types").ParseResult {
+  // Guard: validate referenceDate format and calendar reality
+  if (!ISO_DATE_RE.test(referenceDate)) {
+    return {
+      records: [],
+      unparseable: [{ lineNumber: 1, reason: "invalid reference date", rawText: "" }],
+    };
+  }
+  {
+    const [y, m, d] = referenceDate.split("-").map(Number);
+    if (!isRealDate(y, m, d)) {
+      return {
+        records: [],
+        unparseable: [{ lineNumber: 1, reason: "invalid reference date", rawText: "" }],
+      };
+    }
+  }
+
+  // Guard: input size limit
+  if (rawText.length > 200_000) {
+    return {
+      records: [],
+      unparseable: [{ lineNumber: 1, reason: "input too large", rawText: "" }],
+    };
+  }
+
+  const records: import("./types").DebitRecord[] = [];
+  const unparseable: import("./types").UnparseableMessage[] = [];
+
+  try {
+    // Short-circuit on empty / whitespace-only input
+    if (rawText.trim().length === 0) {
+      return { records: [], unparseable: [] };
+    }
+
+    const segments = splitMessagesWithOffsets(rawText);
+
+    for (const { text, lineOffset } of segments) {
+      let result: import("./types").DebitRecord | import("./types").UnparseableMessage | null;
+      try {
+        result = parseMessage(text, lineOffset, referenceDate);
+      } catch {
+        unparseable.push({ lineNumber: lineOffset, reason: "internal error", rawText: text });
+        continue;
+      }
+
+      if (result === null) {
+        // Credit alert — silently excluded
+        continue;
+      }
+
+      if ("amount" in result) {
+        records.push(result as import("./types").DebitRecord);
+      } else {
+        unparseable.push(result as import("./types").UnparseableMessage);
+      }
+    }
+
+    return {
+      records: deduplicateRecords(records),
+      unparseable,
+    };
+  } catch {
+    return {
+      records: deduplicateRecords(records),
+      unparseable: [
+        ...unparseable,
+        { lineNumber: 1, reason: "internal error", rawText: "" },
+      ],
+    };
+  }
+}
