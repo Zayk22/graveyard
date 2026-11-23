@@ -188,7 +188,7 @@ Implement two pure TypeScript modules — `alertParser` and `hauntingDetector` �
   - Create `src/lib/index.ts` re-exporting `parseAlerts`, `detectHauntings`, and `formatNaira`
   - _Requirements: 1.1, 2.5, 3.1_
 
-- [ ] 11. Write integration test
+- [x] 11. Write integration test
   - Create `src/lib/integration.test.ts`
   - Compose a fictional multi-month scenario using all three alert formats (Format A, B, and C), mixing in credit alerts, one unsupported-currency alert, and one duplicate
   - Call `parseAlerts(rawText, referenceDate)` with the composed input and assert the returned `records` count and that `unparseable` contains the expected reasons
@@ -200,7 +200,7 @@ Implement two pure TypeScript modules — `alertParser` and `hauntingDetector` �
   - All fixtures use fictional data only (fictional bank names, fictional merchants, invented references)
   - _Requirements: 1.1–1.16, 3.1–3.17, 4.1–4.2, 5.1–5.3_
 
-- [ ] 12. Checkpoint — Core implementation complete
+- [x] 12. Checkpoint — Core implementation complete
   - Ensure all tests pass, ask the user if questions arise.
 
 - [ ] 13. Write property-based tests — formatNaira and Alert Parser
