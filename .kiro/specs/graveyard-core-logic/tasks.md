@@ -139,7 +139,7 @@ Implement two pure TypeScript modules â€” `alertParser` and `hauntingDetector` â
     - _Requirements: 1.15, 3.2_
 
 - [ ] 8. Implement `sortHauntings` and `detectHauntings` entry point
-  - [ ] 8.1 Implement `sortHauntings(hauntings: Haunting[]): Haunting[]` in `src/lib/hauntingDetector.ts`
+ - [x] 8.1 Implement `sortHauntings(hauntings: Haunting[]): Haunting[]` in `src/lib/hauntingDetector.ts`
     - Sort by `estimatedMonthlyCost` descending, then `id` ascending
     - _Requirements: 4.2_
   - [ ] 8.2 Implement `detectHauntings(records: DebitRecord[], referenceDate: string): Haunting[]` in `src/lib/hauntingDetector.ts`

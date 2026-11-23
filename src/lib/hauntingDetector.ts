@@ -157,3 +157,93 @@ export function sortHauntings(hauntings: Haunting[]): Haunting[] {
     return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
   });
 }
+
+// ── 8.2 — detectHauntings ────────────────────────────────────────────────────
+
+function isValidISODate(s: string): boolean {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(s)) return false;
+  const [y, m, d] = s.split("-").map(Number);
+  const dt = new Date(Date.UTC(y, m - 1, d));
+  return dt.getUTCFullYear() === y && dt.getUTCMonth() === m - 1 && dt.getUTCDate() === d;
+}
+
+export function detectHauntings(
+  records: DebitRecord[],
+  referenceDate: string
+): Haunting[] {
+  if (!isValidISODate(referenceDate)) return [];
+
+  const groups = groupByMerchant(records);
+  const hauntings: Haunting[] = [];
+
+  for (const [normalisedMerchant, group] of groups) {
+    try {
+      // Step 1: deduplicate the group
+      const deduped = deduplicateRecords(group);
+
+      // Step 2: initial median across all amounts
+      const initialMedian = computeMedian(deduped.map((r) => r.amount));
+
+      // Step 3: filter to qualifying charges (within ±10% of initial median)
+      const qualifying = filterByTolerance(deduped, initialMedian);
+
+      // Step 4: need at least 3 qualifying charges
+      if (qualifying.length < 3) continue;
+
+      // Step 5: recompute typicalAmount as median of qualifying charges only
+      const typicalAmount = computeMedian(qualifying.map((r) => r.amount));
+
+      // Step 6: sort qualifying by date, compute gaps, classify interval
+      const qualifyingSorted = [...qualifying].sort((a, b) =>
+        a.date < b.date ? -1 : a.date > b.date ? 1 : 0
+      );
+      const gaps = computeGaps(qualifyingSorted.map((r) => r.date));
+      const interval = classifyInterval(gaps);
+      if (interval === null) continue;
+
+      // Step 7: lastChargeDate = most recent date in the whole deduped group
+      const lastChargeDate = deduped.reduce((best, r) =>
+        r.date > best ? r.date : best, deduped[0].date
+      );
+
+      // Step 8: displayName from most recent charge in whole deduped group;
+      // tie-break by alphabetically first displayName
+      const mostRecent = deduped
+        .filter((r) => r.date === lastChargeDate)
+        .sort((a, b) => (a.displayName < b.displayName ? -1 : a.displayName > b.displayName ? 1 : 0));
+      const displayName = mostRecent[0].displayName;
+
+      // Step 9: sourceCharges = all deduped records, sorted by date asc then amount asc
+      const sourceCharges = [...deduped].sort((a, b) => {
+        if (a.date !== b.date) return a.date < b.date ? -1 : 1;
+        return a.amount - b.amount;
+      });
+
+      // Step 10: build the Haunting object
+      const nextExpectedDate = computeNextDate(lastChargeDate, interval);
+      const estimatedMonthlyCost = computeMonthlyCost(typicalAmount, interval);
+      const status = assignStatus(nextExpectedDate, interval, referenceDate);
+      const id = stableId(normalisedMerchant, interval);
+      const chargeCount = sourceCharges.length;
+
+      hauntings.push({
+        id,
+        normalisedMerchant,
+        displayName,
+        typicalAmount,
+        interval,
+        lastChargeDate,
+        nextExpectedDate,
+        estimatedMonthlyCost,
+        chargeCount,
+        sourceCharges,
+        status,
+      });
+    } catch {
+      // One bad group must not poison others
+      continue;
+    }
+  }
+
+  return sortHauntings(hauntings);
+}
