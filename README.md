@@ -1,36 +1,74 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Graveyard
 
-## Getting Started
+Paste your bank debit alerts. Graveyard finds the charges that keep coming back
+(your "hauntings"), shows what they cost you each month, and lets you exorcise
+the ones you no longer want.
 
-First, run the development server:
+Everything runs in your browser. There are no accounts and no servers, and your
+alerts never leave your device.
+
+**Live demo:** https://graveyard-gamma.vercel.app/
+**Built for:** Kiroween 2026, Costume Contest category
+
+> All sample data in this project is made up. Never paste real bank messages
+> into a demo.
+
+## How it works
+
+1. **Parse.** Alerts in three formats are turned into debit records. Amounts are
+   stored as whole kobo (integers), never floats. Dates are handled as UTC days.
+   Credits, unsupported currencies and unreadable lines are rejected with a
+   specific reason.
+2. **Detect.** Records are grouped by merchant. A group counts as a haunting
+   when at least three charges sit within 10% of the median amount and their
+   gaps fit a weekly, monthly or yearly rhythm.
+3. **Cost.** Each haunting gets an estimated monthly cost, a next expected date
+   and a status: active or lapsed.
+4. **Exorcise.** Cancel a haunting and it is buried in the graveyard.
+
+Supported alert shapes, all with made-up examples:
+
+- Format A: lines labelled `Amt`, `Desc` and `Date`
+- Format B: one line, such as `debited NGN 2,500.00 for NeonBites on 2024-06-03`
+- Format C: lines labelled `Amount`, `Description` and `Value Date`
+
+## Tech
+
+Next.js (App Router), TypeScript (strict), Tailwind, Vitest and fast-check.
+
+The core logic lives in `src/lib/` and has no UI dependencies:
+
+- `alertParser.ts`: parsing and rejection reasons
+- `hauntingDetector.ts`: grouping, tolerance, intervals, cost and status
+- `formatNaira.ts`: the only place money is formatted
+- `index.ts`: the public API (`parseAlerts`, `detectHauntings`, `formatNaira`)
+
+## Run it
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev        # http://localhost:3000
+npm test           # run the test suite
+npx tsc --noEmit   # type check
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Built with Kiro
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+This project was built spec-first with Kiro's agent.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **Specs:** `.kiro/specs/graveyard-core-logic/` holds the requirements, design
+  and task list for the parser and detector.
+- **Steering:** `.kiro/steering/` holds the project rules (integer kobo, UTC
+  dates, vocabulary, design tokens and behaviour) that Kiro follows on every
+  task.
+- **Tests:** 198 tests currently pass. Property-based tests with fast-check are
+  part of the spec. <!-- update when 13/14 are done -->
+- **Hooks:** a test-on-save hook runs the suite when files in `src/lib/` change.
+  <!-- add once task 16.2 is done -->
 
-## Learn More
+I also used Claude as a reviewer and prompt helper. Kiro's agent wrote the code.
 
-To learn more about Next.js, take a look at the following resources:
+## Licence
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+MIT. See `LICENSE`.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
